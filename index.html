@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xAI API 交互示例</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #responseDiv {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>xAI API 交互</h1>
+  <textarea id="userInput" placeholder="在此输入你的问题"></textarea>
+  <button onclick="sendRequest()">发送请求</button>
+  <div id="responseDiv"></div>
+
+  <script>
+    const apiKey = "xai-vac8F8RXUAcbmOGksJEkuECvND5lS0EYjDwTZObhbXOXJMgL1m0Yi61nyqgEKjVZ8EHTnHrrvI7XOJu3";
+
+    async function sendRequest() {
+      const userInput = document.getElementById('userInput').value;
+      const responseDiv = document.getElementById('responseDiv');
+
+      // 输入验证
+      if (userInput === "") {
+        responseDiv.innerHTML = '<p>请输入问题后再发送请求。</p>';
+        return;
+      }
+
+      try {
+        const response = await fetch('https://api.x.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            "messages": [
+              {
+                "role": "system",
+                "content": "You are a helpful assistant."
+              },
+              {
+                "role": "user",
+                "content": userInput
+              }
+            ],
+            "model": "grok-beta",
+            "stream": false,
+            "temperature": 0
+          })
+        });
+
+        const data = await response.json();
+        responseDiv.innerHTML = `<p>回答: ${data.choices[0].message.content}</p>`;
+      } catch (error) {
+        console.error('请求出错:', error);
+        responseDiv.innerHTML = '<p>请求出错，请检查网络或 API 关键信息。</p>';
+      }
+    }
+  </script>
+</body>
+
+</html>
